@@ -1,0 +1,7 @@
+{
+  "name": "Copy of AgroAssist Pro - Consultor Técnico Agrícola",
+  "description": "Assistente especializado para engenheiros agrônomos, focado em planejamento de safra, manejo de culturas e otimização de colheita.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
