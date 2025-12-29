@@ -4,7 +4,7 @@ import { Role, Message, ChatSession } from './types';
 import Sidebar from './components/Sidebar';
 import MessageBubble from './components/MessageBubble';
 import { generateAgroAnalysis } from './services/geminiService';
-import { Send, Loader2, Leaf, Tractor, ThermometerSun, Sprout, Menu } from 'lucide-react';
+import { Send, Loader2, Leaf, Tractor, ThermometerSun, Sprout, Menu, ChevronRight } from 'lucide-react';
 
 const App: React.FC = () => {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
@@ -87,7 +87,7 @@ const App: React.FC = () => {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: Role.ASSISTANT,
-        content: "Ocorreu um erro técnico ao processar sua solicitação. Verifique sua conexão.",
+        content: "Erro de conexão. A análise técnica não pôde ser completada.",
         timestamp: new Date(),
       };
       setSessions(prev => prev.map(s => {
@@ -112,115 +112,129 @@ const App: React.FC = () => {
         onSelectSession={setCurrentSessionId} 
       />
 
-      <main className="flex-1 flex flex-col relative min-w-0">
-        {/* Header */}
-        <header className="h-16 md:h-20 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-8 z-30 shadow-sm sticky top-0">
-          <div className="flex items-center gap-3">
+      <main className="flex-1 flex flex-col relative min-w-0 h-full">
+        {/* Header - Mobile First */}
+        <header className="h-16 md:h-20 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-8 z-30 sticky top-0 safe-area-top">
+          <div className="flex items-center gap-2 md:gap-4 min-w-0">
             <button 
               onClick={() => setIsSidebarOpen(true)}
-              className="md:hidden p-2 -ml-2 hover:bg-slate-100 rounded-lg text-slate-600"
+              className="md:hidden p-2 -ml-2 hover:bg-slate-100 rounded-xl text-slate-600 active:bg-slate-200 transition-colors"
+              aria-label="Abrir Menu"
             >
               <Menu className="w-6 h-6" />
             </button>
-            <div className="hidden sm:block p-2 bg-emerald-100 rounded-xl text-emerald-700">
+            <div className="hidden sm:flex p-2 bg-emerald-100 rounded-xl text-emerald-700 shrink-0">
               <Tractor className="w-5 h-5 md:w-6 md:h-6" />
             </div>
             <div className="min-w-0">
-              <h1 className="font-bold text-slate-800 text-sm md:text-base leading-tight truncate">Painel Consultivo</h1>
-              <p className="text-[9px] md:text-[10px] text-emerald-600 font-bold uppercase tracking-widest truncate">Acesso Eng. Agrônomo</p>
+              <h1 className="font-bold text-slate-900 text-sm md:text-base leading-tight truncate">Relatório Técnico</h1>
+              <div className="flex items-center gap-1.5 overflow-hidden">
+                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 animate-pulse" />
+                 <p className="text-[9px] md:text-[10px] text-emerald-600 font-bold uppercase tracking-wider truncate">Eng. Agrônomo Online</p>
+              </div>
             </div>
           </div>
 
-          <div className="flex gap-3 md:gap-6 text-slate-400">
-            <div className="hidden lg:flex items-center gap-2">
-              <Sprout className="w-4 h-4" />
-              <span className="text-xs">Soja/Milho</span>
+          <div className="flex items-center gap-2 md:gap-6 text-slate-400 shrink-0">
+            <div className="hidden lg:flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
+              <Sprout className="w-4 h-4 text-emerald-600" />
+              <span className="text-xs font-medium text-slate-600">Culturas Ativas</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 bg-amber-50 md:bg-transparent px-2.5 py-1.5 md:p-0 rounded-full md:rounded-none border border-amber-100 md:border-none">
               <ThermometerSun className="w-4 h-4 text-amber-500" />
-              <span className="text-[10px] md:text-xs font-medium">Clima Local</span>
+              <span className="text-[10px] md:text-xs font-semibold text-amber-700 md:text-slate-500 uppercase tracking-tighter md:tracking-normal">Clima</span>
             </div>
           </div>
         </header>
 
-        {/* Chat Area */}
+        {/* Chat Area - Scrollable */}
         <div 
           ref={scrollRef}
-          className="flex-1 overflow-y-auto p-4 md:p-8 bg-gradient-to-b from-stone-50 to-white scroll-smooth"
+          className="flex-1 overflow-y-auto p-4 md:p-8 space-y-2 bg-gradient-to-b from-stone-50 to-white scroll-smooth no-scrollbar"
         >
           {currentSession?.messages.length === 0 && !isLoading && (
-            <div className="min-h-full flex flex-col items-center justify-center text-center max-w-2xl mx-auto space-y-6 md:space-y-8 py-10">
-              <div className="w-16 h-16 md:w-20 md:h-20 bg-emerald-100 rounded-3xl flex items-center justify-center text-emerald-600 mb-2 animate-pulse shadow-inner">
-                <Leaf className="w-8 h-8 md:w-10 md:h-10" />
+            <div className="min-h-full flex flex-col items-center justify-center text-center max-w-xl mx-auto py-10 px-4">
+              <div className="w-20 h-20 md:w-24 md:h-24 bg-white border border-emerald-100 rounded-[2.5rem] flex items-center justify-center text-emerald-600 mb-6 shadow-xl shadow-emerald-900/5 rotate-3 hover:rotate-0 transition-transform duration-500">
+                <Leaf className="w-10 h-10 md:w-12 md:h-12" />
               </div>
-              <div>
-                <h2 className="text-xl md:text-2xl font-bold text-slate-800 mb-2">Análise de Safra</h2>
-                <p className="text-sm md:text-base text-slate-500 leading-relaxed px-4">
-                  Forneça dados sobre estádio fenológico, condições de solo e monitoramento para diagnóstico técnico.
+              <div className="space-y-4 mb-10">
+                <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Análise Especializada</h2>
+                <p className="text-sm md:text-base text-slate-500 leading-relaxed font-medium">
+                  Olá, Engenheiro. Descreva as condições da lavoura ou solicite um plano de manejo fundamentado.
                 </p>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full px-4">
+              
+              <div className="w-full grid grid-cols-1 gap-3">
                 {[
-                  "Plantio de milho safrinha",
-                  "Manejo de percevejo na soja",
-                  "Redução de perdas na colheita",
-                  "Densidade de brachiaria"
+                  "Manejo de percevejo na soja (R5)",
+                  "Densidade de milho safrinha",
+                  "Planejamento de sorgo forrageiro",
+                  "Redução de perdas na colheita"
                 ].map((suggestion) => (
                   <button
                     key={suggestion}
                     onClick={() => setInput(suggestion)}
-                    className="p-4 bg-white border border-emerald-100 rounded-2xl text-xs md:text-sm text-emerald-800 hover:border-emerald-400 hover:bg-emerald-50 transition-all text-left font-semibold shadow-sm flex items-center gap-3"
+                    className="group p-5 bg-white border border-slate-200 rounded-2xl text-sm text-slate-700 hover:border-emerald-500 hover:bg-emerald-50/50 transition-all text-left font-semibold shadow-sm flex items-center justify-between active:scale-[0.98]"
                   >
-                    <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                    {suggestion}
+                    <span className="group-hover:text-emerald-800 transition-colors">{suggestion}</span>
+                    <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-emerald-400 transition-colors" />
                   </button>
                 ))}
               </div>
             </div>
           )}
 
-          {currentSession?.messages.map((msg) => (
-            <MessageBubble key={msg.id} message={msg} />
-          ))}
+          <div className="max-w-4xl mx-auto w-full">
+            {currentSession?.messages.map((msg) => (
+              <MessageBubble key={msg.id} message={msg} />
+            ))}
+          </div>
 
           {isLoading && (
-            <div className="flex justify-start mb-8">
+            <div className="max-w-4xl mx-auto w-full flex justify-start mb-8">
               <div className="flex gap-3 md:gap-4 items-start">
-                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-lg shadow-emerald-900/10">
-                  <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" />
+                <div className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-lg shadow-emerald-900/10">
+                  <Loader2 className="w-5 h-5 animate-spin" />
                 </div>
-                <div className="p-4 bg-white border border-slate-100 rounded-2xl shadow-sm italic text-slate-400 text-xs md:text-sm">
-                  Processando parâmetros técnicos...
+                <div className="p-4 bg-white border border-slate-100 rounded-2xl shadow-sm">
+                  <span className="flex items-center gap-2 text-slate-400 text-xs md:text-sm font-medium animate-pulse">
+                    Consultando bases técnicas...
+                  </span>
                 </div>
               </div>
             </div>
           )}
         </div>
 
-        {/* Input Area */}
-        <div className="p-4 md:p-6 bg-white border-t border-slate-200 shadow-[0_-4px_15px_rgba(0,0,0,0.03)] z-20">
+        {/* Fixed Input Area - Optimized for Touch */}
+        <div className="p-4 md:p-6 bg-white border-t border-slate-200 shadow-[0_-10px_30px_rgba(0,0,0,0.03)] z-20 safe-area-bottom">
           <form 
             onSubmit={handleSendMessage}
-            className="max-w-4xl mx-auto relative group"
+            className="max-w-4xl mx-auto relative"
           >
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Descreva o cenário técnico..."
-              className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3.5 md:py-4 pl-5 md:pl-6 pr-14 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm md:text-base text-slate-700 placeholder:text-slate-400 shadow-inner"
+              placeholder="Ex: Manejo de pragas no milho..."
+              className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 md:py-5 pl-6 pr-16 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm md:text-base text-slate-800 placeholder:text-slate-400 font-medium shadow-inner"
             />
             <button
               type="submit"
               disabled={isLoading || !input.trim()}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 md:p-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md active:scale-95"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-3 md:p-3.5 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-30 disabled:scale-95 disabled:grayscale transition-all shadow-lg shadow-emerald-900/10 active:scale-90"
+              aria-label="Enviar"
             >
               {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
             </button>
           </form>
-          <p className="text-[9px] md:text-[10px] text-center text-slate-400 mt-4 uppercase tracking-tighter font-medium">
-            Ferramenta Consultiva • Validação Local Necessária
-          </p>
+          <div className="flex items-center justify-center gap-2 mt-4 opacity-50">
+             <div className="h-px w-8 bg-slate-300" />
+             <p className="text-[9px] text-slate-500 uppercase font-bold tracking-[0.2em]">
+               Uso Técnico Profissional
+             </p>
+             <div className="h-px w-8 bg-slate-300" />
+          </div>
         </div>
       </main>
     </div>
